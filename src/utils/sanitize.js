@@ -29,6 +29,7 @@ export function sanitizeName(name, maxLength = 50) {
   return name
     .replace(/[^a-zA-Z\s\-']/g, '')
     .trim()
+    .toUpperCase()
     .slice(0, maxLength);
 }
 

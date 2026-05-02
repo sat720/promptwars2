@@ -8,8 +8,11 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { sanitizeChatMessage } from '@/utils/sanitize';
-import { RATE_LIMIT, STORAGE_KEYS } from '@/constants';
+import { RATE_LIMIT, STORAGE_KEYS, SUPPORTED_LANGUAGES } from '@/constants';
 import { checkRateLimit } from '@/utils/sanitize';
+import { useLanguage } from '@/context/LanguageContext';
+import { t } from '@/data/translations';
+import TranslatedText from '@/components/TranslatedText';
 import { Send, X, Bot, ChevronDown, Mic, MicOff, Volume2 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
@@ -30,14 +33,23 @@ const SUGGESTED_QUESTIONS = [
  */
 export default function VoteAssist() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
+  const { language } = useLanguage();
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    const welcomeMsg = {
       id: 'welcome',
       role: 'ai',
-      content: "👋 Hi! I'm **Vote Assist**, your AI guide to Indian elections!\n\nI can help you with:\n• Understanding the election process\n• Getting your Voter ID\n• Finding your polling booth\n• Election timelines and stages\n\nWhat would you like to know?",
+      content: language === 'hi' ? "👋 नमस्ते! मैं **वोट असिस्ट** हूं, भारतीय चुनावों के लिए आपका एआई गाइड!\n\nमैं आपकी मदद कर सकता हूं:\n• चुनाव प्रक्रिया को समझना\n• अपनी वोटर आईडी प्राप्त करना\n• अपना मतदान केंद्र ढूँढना\n• चुनाव की समय सीमा और चरण\n\nआप क्या जानना चाहेंगे?" :
+               language === 'te' ? "👋 నమస్తే! నేను **ఓటు అసిస్ట్**, భారతీయ ఎన్నికల కోసం మీ AI గైడ్!\n\nనేను మీకు సహాయం చేయగలను:\n• ఎన్నికల ప్రక్రియను అర్థం చేసుకోవడం\n• మీ ఓటరు ఐడిని పొందడం\n• మీ పోలింగ్ బూత్‌ను కనుగొనడం\n• ఎన్నికల కాలక్రమం మరియు దశలు\n\nమీరు ఏమి తెలుసుకోవాలనుకుంటున్నారు?" :
+               language === 'ta' ? "👋 வணக்கம்! நான் **வாக்கு உதவி**, இந்திய தேர்தல்களுக்கான உங்கள் AI வழிகாட்டி!\n\nநான் உங்களுக்கு உதவ முடியும்:\n• தேர்தல் செயல்முறையைப் புரிந்துகொள்வது\n• உங்கள் வாக்காளர் அடையாள அட்டையைப் பெறுதல்\n• உங்கள் வாக்குச் சாவடியைக் கண்டறிதல்\n• தேர்தல் காலவரிசை மற்றும் நிலைகள்\n\nநீங்கள் என்ன தெரிந்து கொள்ள விரும்புகிறீர்கள்?" :
+               language === 'kn' ? "👋 ನಮಸ್ತೆ! ನಾನು **ಮತ ಸಹಾಯ**, ಭಾರತೀಯ ಚುನಾವಣೆಗಳಿಗೆ ನಿಮ್ಮ AI ಮಾರ್ಗದರ್ಶಿ!\n\nನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಲ್ಲೆ:\n• ಚುನಾವಣಾ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳುವುದು\n• ನಿಮ್ಮ ಮತದಾರರ ಗುರುತಿನ ಚೀಟಿಯನ್ನು ಪಡೆಯುವುದು\n• ನಿಮ್ಮ ಮತದಾನ ಕೇಂದ್ರವನ್ನು ಹುಡುಕುವುದು\n• ಚುನಾವಣಾ ವೇಳಾಪಟ್ಟಿ ಮತ್ತು ಹಂತಗಳು\n\nನೀವು ಏನನ್ನು ತಿಳಿಯಲು ಬಯಸುತ್ತೀರಿ?" :
+               "👋 Hi! I'm **Vote Assist**, your AI guide to Indian elections!\n\nI can help you with:\n• Understanding the election process\n• Getting your Voter ID\n• Finding your polling booth\n• Election timelines and stages\n\nWhat would you like to know?",
       timestamp: new Date(),
-    }
-  ]);
+    };
+    setMessages(prev => prev.length === 0 ? [welcomeMsg] : prev);
+  }, [language]);
+
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
@@ -216,25 +228,37 @@ export default function VoteAssist() {
 
   return (
     <>
-      {/* Floating button */}
-      <button
-        onClick={() => setOpen(!open)}
-        aria-label="Open Vote Assist AI chatbot"
-        aria-expanded={open}
-        id="vote-assist-float-btn"
-        style={{
-          position: 'fixed', bottom: 24, right: 24, zIndex: 1000,
-          width: 56, height: 56, borderRadius: '50%',
-          background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-          border: 'none', cursor: 'pointer', color: 'white',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '1.4rem', boxShadow: '0 8px 32px rgba(99,102,241,0.5)',
-          animation: open ? 'none' : 'pulse 2s ease infinite',
-          transition: 'all 0.3s',
-        }}
-      >
-        {open ? <X size={24} /> : '🤖'}
-      </button>
+      {/* Floating button and tooltip */}
+      <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 12 }}>
+        {!open && (
+          <div style={{
+            background: 'var(--bg)', padding: '10px 16px', borderRadius: '20px 20px 4px 20px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.15)', border: '1px solid var(--border)',
+            fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)',
+            animation: 'bounce 2s infinite', transformOrigin: 'bottom right',
+            cursor: 'pointer'
+          }} onClick={() => setOpen(true)}>
+            💭 <TranslatedText text="Any doubt? Ask me!" />
+          </div>
+        )}
+        <button
+          onClick={() => setOpen(!open)}
+          aria-label="Open Vote Assist AI chatbot"
+          aria-expanded={open}
+          id="vote-assist-float-btn"
+          style={{
+            width: 56, height: 56, borderRadius: '50%',
+            background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+            border: 'none', cursor: 'pointer', color: 'white',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1.4rem', boxShadow: '0 8px 32px rgba(99,102,241,0.5)',
+            animation: open ? 'none' : 'pulse 2s ease infinite',
+            transition: 'all 0.3s',
+          }}
+        >
+          {open ? <X size={24} /> : '🤖'}
+        </button>
+      </div>
 
       {/* Chat panel */}
       {open && (

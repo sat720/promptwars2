@@ -9,7 +9,7 @@ import './globals.css';
 import { APP_META } from '@/constants';
 import Navbar from '@/components/Navbar';
 import VoteAssist from '@/components/VoteAssist';
-import { Toaster } from 'react-hot-toast';
+import { Providers } from '@/context/Providers';
 
 /** @type {import('next').Metadata} */
 export const metadata = {
@@ -59,36 +59,21 @@ export default function RootLayout({ children }) {
         )}
       </head>
       <body>
-        {/* Accessibility: Skip to main content */}
-        <a href="#main-content" className="skip-link">Skip to main content</a>
+        <Providers>
+          {/* Accessibility: Skip to main content */}
+          <a href="#main-content" className="skip-link">Skip to main content</a>
 
-        <Navbar />
+          <Navbar />
 
-        <main id="main-content">
-          <Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
-            {children}
-          </Suspense>
-        </main>
+          <main id="main-content">
+            <Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
+              {children}
+            </Suspense>
+          </main>
 
-        {/* Global Vote Assist floating chatbot */}
-        <VoteAssist />
-
-        {/* Toast notifications */}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#16213e',
-              color: '#f1f5f9',
-              border: '1px solid rgba(99,102,241,0.3)',
-              borderRadius: '12px',
-              fontFamily: 'Inter, sans-serif',
-            },
-            success: { iconTheme: { primary: '#22c55e', secondary: '#fff' } },
-            error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
-          }}
-        />
+          {/* Global Vote Assist floating chatbot */}
+          <VoteAssist />
+        </Providers>
       </body>
     </html>
   );

@@ -5,12 +5,24 @@ import { useRouter } from 'next/navigation';
 import { createVoterData, saveVoterData, hasValidVoterData, getVoterData } from '@/utils/voterUtils';
 import { sanitizeName, sanitizePincode, validateDob, validateRequired, validatePincode } from '@/utils/sanitize';
 import { INDIAN_STATES, ROUTES } from '@/constants';
-import { Upload, User, ArrowRight, CheckCircle, Eye } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import TranslatedText from '@/components/TranslatedText';
+import { Upload, User, ArrowRight, CheckCircle, Eye, Info } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
+/** Field component for form structure */
+const Field = ({ label, id, error, children }) => (
+  <div>
+    <label className="label" htmlFor={id}><TranslatedText text={label} /></label>
+    {children}
+    {error && <div className="error-msg" role="alert">{error}</div>}
+  </div>
+);
+
 export default function ApplyPage() {
   const router = useRouter();
+  const { language } = useLanguage();
   const fileRef = useRef(null);
   const [step, setStep] = useState(1); // 1=form, 2=success
   const [loading, setLoading] = useState(false);
@@ -86,27 +98,20 @@ export default function ApplyPage() {
     }
   };
 
-  const Field = ({ label, id, error, children }) => (
-    <div>
-      <label className="label" htmlFor={id}>{label}</label>
-      {children}
-      {error && <div className="error-msg" role="alert">{error}</div>}
-    </div>
-  );
 
   if (alreadyExists && step !== 2) {
     return (
       <div className="page-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
         <div className="card" style={{ maxWidth: 480, width: '100%', textAlign: 'center', padding: 40 }}>
           <div style={{ fontSize: '3rem', marginBottom: 20 }}>🪪</div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: 12 }}>Voter ID Already Exists!</h1>
-          <p style={{ color: 'var(--text2)', marginBottom: 8 }}>You already have a Voter ID:</p>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: 12 }}><TranslatedText text="Voter ID Already Exists!" /></h1>
+          <p style={{ color: 'var(--text2)', marginBottom: 8 }}><TranslatedText text="You already have a Voter ID:" /></p>
           <div style={{ fontFamily: 'monospace', fontSize: '1.3rem', color: 'var(--primary-light)', fontWeight: 700, padding: '12px 20px', background: 'var(--bg3)', borderRadius: 10, marginBottom: 24 }}>
             {existingData?.voterId}
           </div>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-            <Link href={ROUTES.LOGIN}><button className="btn btn-primary" id="existing-login-btn"><Eye size={16} /> View My Card</button></Link>
-            <Link href={ROUTES.HOME}><button className="btn btn-outline" id="existing-home-btn">Go Home</button></Link>
+            <Link href={ROUTES.LOGIN}><button className="btn btn-primary" id="existing-login-btn"><Eye size={16} /> <TranslatedText text="View My Card" /></button></Link>
+            <Link href={ROUTES.HOME}><button className="btn btn-outline" id="existing-home-btn"><TranslatedText text="Go Home" /></button></Link>
           </div>
         </div>
       </div>
@@ -118,8 +123,14 @@ export default function ApplyPage() {
       <div className="page-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
         <div className="card animate-bounce-in" style={{ maxWidth: 520, width: '100%', textAlign: 'center', padding: 40 }}>
           <div style={{ fontSize: '3rem', marginBottom: 16 }}>🎉</div>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: 8 }}>Your Voter ID is Ready!</h1>
-          <p style={{ color: 'var(--text2)', marginBottom: 24 }}>Welcome to Indian democracy, {generatedData.firstName}!</p>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: 8 }}><TranslatedText text="Your Voter ID is Ready!" /></h1>
+          <p style={{ color: 'var(--text2)', marginBottom: 24 }}><TranslatedText text="Welcome to Indian democracy," /> {generatedData.firstName}!</p>
+          <div style={{ padding: '12px 16px', background: 'rgba(99,102,241,0.1)', borderRadius: 10, border: '1px solid rgba(99,102,241,0.2)', marginBottom: 24, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+            <Info size={18} style={{ color: 'var(--primary-light)', flexShrink: 0, marginTop: 2 }} />
+            <p style={{ fontSize: '0.85rem', color: 'var(--text2)', lineHeight: 1.5 }}>
+              <TranslatedText text="This is a demo application. Your data is stored locally in your browser and will be used to generate your personalized experience on VoteWise AI." />
+            </p>
+          </div>
           <div style={{ background: 'var(--bg3)', borderRadius: 12, padding: 24, marginBottom: 24, textAlign: 'left' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: '0.85rem' }}>
               {[
@@ -131,16 +142,15 @@ export default function ApplyPage() {
                 ['Constituency', generatedData.constituency],
               ].map(([k, v]) => (
                 <div key={k}>
-                  <div style={{ color: 'var(--text3)', fontSize: '0.75rem' }}>{k}</div>
+                  <div style={{ color: 'var(--text3)', fontSize: '0.75rem' }}><TranslatedText text={k} /></div>
                   <div style={{ fontWeight: 600, color: k === 'Voter ID' ? 'var(--primary-light)' : 'var(--text)', fontFamily: k === 'Voter ID' ? 'monospace' : 'inherit' }}>{v}</div>
                 </div>
               ))}
             </div>
           </div>
-          <div className="badge badge-warning" style={{ marginBottom: 20 }}>⏱️ Valid for 4 hours — Session stored in your browser</div>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-            <Link href={ROUTES.LOGIN}><button className="btn btn-primary btn-lg" id="success-login-btn">Login Now <ArrowRight size={18} /></button></Link>
-            <Link href={ROUTES.HOME}><button className="btn btn-outline" id="success-home-btn">Go Home</button></Link>
+            <Link href={ROUTES.LOGIN}><button className="btn btn-primary btn-lg" id="success-login-btn"><TranslatedText text="Login Now" /> <ArrowRight size={18} /></button></Link>
+            <Link href={ROUTES.HOME}><button className="btn btn-outline" id="success-home-btn"><TranslatedText text="Go Home" /></button></Link>
           </div>
         </div>
       </div>
@@ -151,9 +161,13 @@ export default function ApplyPage() {
     <div className="page-wrapper" style={{ background: 'radial-gradient(ellipse at top, rgba(99,102,241,0.1), transparent 60%)' }}>
       <div className="container" style={{ maxWidth: 680, padding: '60px 24px' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🪪</div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: 8 }}>Apply for Voter ID</h1>
-          <p style={{ color: 'var(--text2)' }}>Fill in your details to generate your unique Voter ID card</p>
+          <div className="badge badge-accent" style={{ marginBottom: 16 }}>✨ <TranslatedText text="Instant Registration" /></div>
+          <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 800, marginBottom: 12 }}>
+            <TranslatedText text="Apply for" /> <span className="gradient-text"><TranslatedText text="Digital Voter ID" /></span>
+          </h1>
+          <p style={{ color: 'var(--text2)', maxWidth: 500, margin: '0 auto' }}>
+            <TranslatedText text="Fill in your details below to generate your unique Voter ID card and access all platform features." />
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="card" noValidate>
@@ -226,10 +240,6 @@ export default function ApplyPage() {
               </div>
               <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhoto} aria-label="Upload photo" />
             </div>
-          </div>
-
-          <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(245,158,11,0.1)', borderRadius: 8, border: '1px solid rgba(245,158,11,0.2)', fontSize: '0.8rem', color: 'var(--text2)' }}>
-            ⏱️ Your Voter ID will be stored for <strong>4 hours</strong> in your browser. After that, you can apply again.
           </div>
 
           <button type="submit" disabled={loading} className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: 24 }} id="apply-submit-btn">

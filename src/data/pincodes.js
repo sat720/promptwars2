@@ -6,7 +6,7 @@
 /** @type {Object.<string, {constituency: string, state: string, city: string, boothLat: number, boothLng: number}>} */
 export const PINCODE_MAP = {
   // Karnataka
-  '560001': { constituency: 'Bangalore South', state: 'Karnataka', city: 'Bangalore', boothLat: 12.9716, boothLng: 77.5946 },
+  '560001': { constituency: 'Bangalore Central', state: 'Karnataka', city: 'Bangalore', boothLat: 12.9716, boothLng: 77.5946 },
   '560002': { constituency: 'Bangalore Central', state: 'Karnataka', city: 'Bangalore', boothLat: 12.9780, boothLng: 77.6040 },
   '560003': { constituency: 'Bangalore North', state: 'Karnataka', city: 'Bangalore', boothLat: 13.0100, boothLng: 77.5900 },
   '560004': { constituency: 'Bangalore East', state: 'Karnataka', city: 'Bangalore', boothLat: 12.9900, boothLng: 77.6200 },

@@ -6,8 +6,8 @@
 /** Demo OTP — fixed for prototype purposes */
 export const DEMO_OTP = '11111';
 
-/** Session TTL in milliseconds (4 hours) */
-export const SESSION_TTL_MS = 4 * 60 * 60 * 1000;
+/** Session TTL in milliseconds (7 days) */
+export const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 /** Voter ID formula components */
 export const VOTER_ID = {
@@ -42,6 +42,7 @@ export const ELECTION_TYPES = {
   VIDHAN_SABHA: 'Vidhan Sabha',
   LOCAL_BODY: 'Local Body',
   RAJYA_SABHA: 'Rajya Sabha',
+  BY_ELECTION: 'By-Election',
 };
 
 /** API rate limiting — max requests per minute */
