@@ -107,7 +107,18 @@ export default function ElectionTypesPage() {
                 <div style={{ color: 'var(--text3)', fontSize: '0.85rem', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <Users size={16} /> <TranslatedText text="What does it elect?" />
                 </div>
-                <div style={{ fontWeight: 700, fontSize: '1.1rem' }}><TranslatedText text={selectedType.elects} /></div>
+                <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>
+                  <Link href={`/representatives?role=${
+                    selectedType.id === 'lok-sabha' ? 'mp-lok-sabha' :
+                    selectedType.id === 'vidhan-sabha' ? 'mla' :
+                    selectedType.id === 'rajya-sabha' ? 'mp-rajya-sabha' :
+                    selectedType.id === 'presidential' ? 'president' :
+                    selectedType.id === 'mptc' ? 'mptc' :
+                    selectedType.id === 'zptc' ? 'zptc' : 'sarpanch'
+                  }`} style={{ color: selectedType.color, textDecoration: 'underline', textDecorationThickness: '2px', textUnderlineOffset: '4px' }}>
+                    <TranslatedText text={selectedType.elects} />
+                  </Link>
+                </div>
               </div>
               <div style={{ padding: 20, background: 'var(--bg3)', borderRadius: 12 }}>
                 <div style={{ color: 'var(--text3)', fontSize: '0.85rem', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>

@@ -344,6 +344,31 @@ export default function DashboardPage() {
                   </button>
                 </Link>
               </div>
+
+              <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+                <Link href={ROUTES.ELECTIONS} style={{ flex: 1 }}>
+                  <button className="btn btn-outline" style={{ width: '100%', fontSize: '0.85rem' }}>
+                    🌐 <TranslatedText text="All Elections" />
+                  </button>
+                </Link>
+                <Link href="/representatives" style={{ flex: 1 }}>
+                  <button className="btn btn-outline" style={{ width: '100%', fontSize: '0.85rem' }}>
+                    🎖️ <TranslatedText text="political_positions" />
+                  </button>
+                </Link>
+              </div>
+
+              <Link href={ROUTES.LEARN} style={{ display: 'block', marginTop: 10 }}>
+                <button className="btn btn-ghost" style={{ width: '100%', fontSize: '0.85rem' }}>
+                  📚 <TranslatedText text="Learn About Elections" />
+                </button>
+              </Link>
+
+              <Link href={ROUTES.QUIZ} style={{ display: 'block', marginTop: 8 }}>
+                <button className="btn btn-primary" style={{ width: '100%' }}>
+                  🧠 <TranslatedText text="Take Election Quiz" />
+                </button>
+              </Link>
             </div>
           </div>
         </div>

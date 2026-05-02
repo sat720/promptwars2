@@ -1986,20 +1986,7 @@ export const ELECTIONS = [
     color: '#059669',
     icon: '🏛️',
   },
-  {
-    id: 'up-byelection-2026',
-    name: 'Uttar Pradesh Vidhan Sabha By-Election',
-    type: ELECTION_TYPES.BY_ELECTION,
-    status: ELECTION_STATUS.ONGOING,
-    votingDay: today.toISOString(),
-    state: 'Uttar Pradesh',
-    description: 'By-election to fill the vacant seat in the Uttar Pradesh Legislative Assembly.',
-    whatElected: 'Member of Legislative Assembly (MLA)',
-    whoCanVote: 'Residents of the specific vacant constituency in UP',
-    timeline: ongoingTimeline,
-    color: '#ec4899',
-    icon: '🗳️',
-  },
+
 ];
 
 /**

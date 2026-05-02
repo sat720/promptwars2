@@ -21,11 +21,30 @@ export default function ElectionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [stateFilter, setStateFilter] = useState('all');
   const [showMyElections, setShowMyElections] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  
+
   const loggedIn = isLoggedIn();
   const voterData = getVoterData();
+
+  useEffect(() => {
+    // If URL has ?filter=my, turn on the toggle automatically on initial load
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('filter') === 'my') {
+      const isUserLoggedIn = isLoggedIn();
+      if (isUserLoggedIn) {
+        const data = getVoterData();
+        setShowMyElections(true);
+        if (data && data.state) {
+          setStateFilter(data.state);
+        }
+        setTypeFilter('all');
+      } else {
+        setShowMyElections(true); // Will be reset or show toast when clicked
+      }
+    }
+  }, []);
 
   // Voice Search Implementation (Google STT / Web Speech)
   const startVoiceSearch = () => {
@@ -60,15 +79,19 @@ export default function ElectionsPage() {
                            (election?.state?.toLowerCase() || '').includes(searchTerm.toLowerCase());
       const matchesStatus = activeFilter === 'all' || election.status === activeFilter;
       const matchesType = typeFilter === 'all' || election.type === typeFilter;
+      const matchesState = stateFilter === 'all' || election.state === stateFilter;
       
-      let matchesMyElections = true;
-      if (showMyElections && loggedIn && voterData) {
-        matchesMyElections = election.state === voterData.state;
-      }
-
-      return matchesSearch && matchesStatus && matchesType && matchesMyElections;
+      return matchesSearch && matchesStatus && matchesType && matchesState;
     });
-  }, [searchTerm, activeFilter, typeFilter, showMyElections, loggedIn, voterData]);
+  }, [searchTerm, activeFilter, typeFilter, stateFilter]);
+
+  // Utility to check if today is the voting day
+  const isVotingToday = (election) => {
+    if (!election.votingDay) return false;
+    const vDay = new Date(election.votingDay);
+    const today = new Date();
+    return vDay.toDateString() === today.toDateString();
+  };
 
   // Group by state
   const groupedElections = useMemo(() => {
@@ -118,33 +141,63 @@ export default function ElectionsPage() {
               </button>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <select className="input" value={activeFilter} onChange={e => setActiveFilter(e.target.value)} style={{ minWidth: 140 }}>
-                <option value="all">{t('all_status', language)}</option>
-                <option value={ELECTION_STATUS.ONGOING}>{t('ongoing', language)}</option>
-                <option value={ELECTION_STATUS.UPCOMING}>{t('upcoming', language)}</option>
-                <option value={ELECTION_STATUS.PAST}>{t('past', language)}</option>
-              </select>
+              <div style={{ display: 'flex', gap: 4, background: 'var(--bg3)', padding: 4, borderRadius: 12 }}>
+                {['all', ELECTION_STATUS.ONGOING, ELECTION_STATUS.UPCOMING, ELECTION_STATUS.PAST].map(status => (
+                  <button
+                    key={status}
+                    onClick={() => setActiveFilter(status)}
+                    className={`btn ${activeFilter === status ? 'btn-primary' : 'btn-ghost'} btn-sm`}
+                    style={{ textTransform: 'capitalize', borderRadius: 8 }}
+                  >
+                    {status === 'all' ? t('all_status', language) : t(status, language)}
+                  </button>
+                ))}
+              </div>
               <select className="input" value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ minWidth: 160 }}>
                 <option value="all">{t('all_types', language)}</option>
                 <option value={ELECTION_TYPES.LOK_SABHA}>{t('lok_sabha', language)}</option>
                 <option value={ELECTION_TYPES.VIDHAN_SABHA}>{t('vidhan_sabha', language)}</option>
                 <option value={ELECTION_TYPES.LOCAL_BODY}>{t('local_body', language)}</option>
               </select>
+              <select className="input" value={stateFilter} onChange={e => {
+                const val = e.target.value;
+                setStateFilter(val);
+                if (loggedIn && voterData && val === voterData.state) {
+                  setShowMyElections(true);
+                } else {
+                  setShowMyElections(false);
+                }
+              }} style={{ minWidth: 160 }}>
+                <option value="all">All States</option>
+                {Array.from(new Set(ELECTIONS.map(e => e.state).filter(Boolean))).sort().map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
             </div>
           </div>
 
           <div className="flex-between" style={{ borderTop: '1px solid var(--border2)', paddingTop: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div className={`toggle ${showMyElections ? 'active' : ''}`} onClick={() => {
-                if (!loggedIn) {
-                  toast('Please login to filter by your state', { icon: '🔐' });
-                  return;
-                }
-                setShowMyElections(!showMyElections);
-              }} />
-              <span style={{ fontSize: '0.9rem', color: 'var(--text2)', fontWeight: 600 }}>
-                <TranslatedText text="show_my_elections_only" />
-              </span>
+              <button
+                className={`btn ${showMyElections ? 'btn-primary' : 'btn-outline'} btn-sm`}
+                style={{ borderRadius: 8 }}
+                onClick={() => {
+                  if (!loggedIn) {
+                    toast('Please login to filter by your state', { icon: '🔐' });
+                    return;
+                  }
+                  const newVal = !showMyElections;
+                  setShowMyElections(newVal);
+                  if (newVal && voterData) {
+                    setStateFilter(voterData.state);
+                    setTypeFilter('all');
+                  } else {
+                    setStateFilter('all');
+                  }
+                }}
+              >
+                {showMyElections ? '✓ My Elections' : 'My Elections'}
+              </button>
               {!loggedIn && <div className="badge badge-info" style={{ fontSize: '0.7rem' }}>LOGIN REQUIRED</div>}
             </div>
             <div style={{ fontSize: '0.85rem', color: 'var(--text3)' }}>
@@ -181,7 +234,16 @@ export default function ElectionsPage() {
                             <Info size={14} /> <span>{election.constituenciesCount} <TranslatedText text="Constituencies" /></span>
                           </div>
                         </div>
-                        <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end' }}>
+                        <div style={{ marginTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          {isVotingToday(election) && election.status === ELECTION_STATUS.ONGOING ? (
+                            <Link href={`/elections/${election.id}#booth`} onClick={(e) => e.stopPropagation()}>
+                              <button className="btn btn-primary btn-sm" style={{ padding: '4px 12px', fontSize: '0.75rem' }}>
+                                📍 Find My Booth
+                              </button>
+                            </Link>
+                          ) : (
+                            <div></div> // Empty div for flex-between spacing
+                          )}
                           <span style={{ color: 'var(--primary-light)', fontWeight: 700, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 4 }}>
                             <TranslatedText text="View Details" /> <ChevronRight size={16} />
                           </span>

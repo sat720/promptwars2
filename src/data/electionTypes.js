@@ -92,5 +92,39 @@ export const ELECTION_TYPES_DATA = [
       'The President is the Supreme Commander of the Armed Forces'
     ],
     whoCanVote: 'Citizens DO NOT vote directly. Elected MPs and MLAs vote.'
+  },
+  {
+    id: 'mptc',
+    title: 'Mandal Parishad Elections',
+    subtitle: 'Block Level Local Body',
+    icon: '🌾',
+    color: '#10b981',
+    elects: 'MPTC Member',
+    frequency: 'Every 5 Years',
+    votingMethod: 'Direct Voting (EVM/Ballot)',
+    description: 'Mandal Parishad Territorial Constituency (MPTC) elections are held to elect members to the block-level local government in rural areas. These members coordinate development activities between villages and the district administration.',
+    keyPoints: [
+      'Forms the middle tier of the Panchayati Raj system',
+      'MPTC members elect the Mandal President among themselves',
+      'Focuses on rural development, agriculture, and block-level schools'
+    ],
+    whoCanVote: 'Rural citizens aged 18+ registered in the respective territorial constituency'
+  },
+  {
+    id: 'zptc',
+    title: 'Zilla Parishad Elections',
+    subtitle: 'District Level Local Body',
+    icon: '🏛️',
+    color: '#059669',
+    elects: 'ZPTC Member',
+    frequency: 'Every 5 Years',
+    votingMethod: 'Direct Voting (EVM/Ballot)',
+    description: 'Zilla Parishad Territorial Constituency (ZPTC) elections are the highest tier of the Panchayati Raj system. Elected members govern the entire rural area of a district and allocate funds for major rural infrastructure.',
+    keyPoints: [
+      'Forms the top tier of the rural local government (District Council)',
+      'ZPTC members elect the Zilla Parishad Chairperson',
+      'Oversees major district-level rural projects like irrigation and roads'
+    ],
+    whoCanVote: 'Rural citizens aged 18+ registered in the district\'s territorial constituency'
   }
 ];

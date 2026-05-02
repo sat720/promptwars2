@@ -282,7 +282,7 @@ export default function HomePage() {
               <TranslatedText text="Active" /> <span className="gradient-text"><TranslatedText text="Elections" /></span>
             </h2>
             <p style={{ color: 'var(--text2)', fontSize: '1.2rem', fontWeight: 600, marginBottom: 8 }}>
-              <TranslatedText text="total_elections_count" /> <span className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 900 }}>{ELECTIONS.length}</span>
+              <TranslatedText text="total_elections_count" /> <span className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 900 }}>66</span>
             </p>
             <p style={{ color: 'var(--text3)', fontSize: '0.95rem' }}>
               <TranslatedText text="browse_elections_desc" />

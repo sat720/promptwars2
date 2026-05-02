@@ -151,17 +151,22 @@ function RepresentativeDetail({ rep, onBack }) {
                 <div style={{ fontWeight: 700, fontSize: '1.1rem' }}><TranslatedText text={rep.eligibility.citizenship} /></div>
               </div>
             </div>
-            <h4 style={{ fontWeight: 700, marginBottom: 12, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--error)' }}>
-              <Shield size={18} /> <TranslatedText text="Disqualifications" />
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {rep.eligibility.disqualifications.map((d, i) => (
-                <div key={i} style={{ display: 'flex', gap: 12, padding: '12px 16px', background: 'rgba(239,68,68,0.03)', borderRadius: 12, border: '1px solid rgba(239,68,68,0.08)' }}>
-                  <span style={{ color: 'var(--error)', fontWeight: 900 }}>✕</span>
-                  <span style={{ fontSize: '0.95rem', color: 'var(--text2)', lineHeight: 1.4 }}><TranslatedText text={d} /></span>
+            
+            {rep.eligibility.disqualifications && rep.eligibility.disqualifications.length > 0 && (
+              <>
+                <h4 style={{ fontWeight: 700, marginBottom: 12, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--error)' }}>
+                  <Shield size={18} /> <TranslatedText text="Disqualifications" />
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {rep.eligibility.disqualifications.map((d, i) => (
+                    <div key={i} style={{ display: 'flex', gap: 12, padding: '12px 16px', background: 'rgba(239,68,68,0.03)', borderRadius: 12, border: '1px solid rgba(239,68,68,0.08)' }}>
+                      <span style={{ color: 'var(--error)', fontWeight: 900 }}>✕</span>
+                      <span style={{ fontSize: '0.95rem', color: 'var(--text2)', lineHeight: 1.4 }}><TranslatedText text={d} /></span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </InfoBlock>
         </div>
 
