@@ -13,13 +13,13 @@ import { Providers } from '@/context/Providers';
 
 /** @type {import('next').Metadata} */
 export const metadata = {
-  title: `${APP_META.NAME} — Interactive Election Education Platform`,
-  description: APP_META.DESCRIPTION,
-  keywords: 'election, voter id, India elections, how to vote, election process, voter registration, EVM, constituency',
-  authors: [{ name: 'VoteWise AI Team' }],
+  title: 'VoteWise AI | Your Personal Election Guide',
+  description: 'Understand Indian elections, find your booth, and get your digital voter ID with AI-powered insights.',
+  keywords: 'India Elections, Voter ID, Polling Booth, Gemini AI, Election Commission, Lok Sabha, MPTC, ZPTC',
+  authors: [{ name: 'VoteWise Team' }],
+  viewport: 'width=device-width, initial-scale=1',
   robots: 'index, follow',
   openGraph: {
-    title: APP_META.NAME,
     description: APP_META.DESCRIPTION,
     type: 'website',
   },

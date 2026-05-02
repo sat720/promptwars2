@@ -174,7 +174,7 @@ export default function ElectionTypesPage() {
     <div className="page-wrapper" style={{ background: 'radial-gradient(ellipse at top left, rgba(99,102,241,0.05), transparent 50%)' }}>
       <div className="container" style={{ padding: '60px 24px' }}>
         
-        <div style={{ textAlign: 'center', marginBottom: 50 }}>
+        <header style={{ textAlign: 'center', marginBottom: 50 }}>
           <div className="badge badge-info" style={{ marginBottom: 16 }}>
             <Layers size={14} style={{ display: 'inline', marginRight: 6, marginBottom: -2 }} /> 
             <TranslatedText text="Electoral System" />
@@ -185,15 +185,15 @@ export default function ElectionTypesPage() {
           <p style={{ color: 'var(--text2)', maxWidth: 600, margin: '0 auto', fontSize: '1.1rem', lineHeight: 1.6 }}>
             <TranslatedText text="India has a federal structure with elections occurring at multiple levels. Understand the difference between National, State, and Local elections." />
           </p>
-        </div>
+        </header>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 900, margin: '0 auto' }}>
+        <section style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 900, margin: '0 auto' }} aria-label="List of election types">
           {ELECTION_TYPES_DATA.map(type => (
             <ElectionTypeCard key={type.id} type={type} onSelect={setSelectedType} />
           ))}
-        </div>
+        </section>
         
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 40, gap: 16 }}>
+        <footer style={{ display: 'flex', justifyContent: 'center', marginTop: 40, gap: 16 }}>
            <Link href={ROUTES.LEARN}>
              <button className="btn btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                <ArrowLeft size={16} /> <TranslatedText text="Back to Learn" />
