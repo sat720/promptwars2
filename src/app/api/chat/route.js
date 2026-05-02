@@ -127,11 +127,14 @@ export async function POST(request) {
       return Response.json({ error: 'Message is required' }, { status: 400 });
     }
 
-    // Get API key — works in both local (.env.local) and Cloud Run (env vars)
+    // --- Secret Resolution ---
+    // On Cloud Run: GEMINI_API_KEY is injected from Google Secret Manager (latest version).
+    // On local dev:  loaded from .env.local automatically by Next.js.
+    // Neither path ever hardcodes a key — rotate in Secret Manager and it takes effect on next deploy.
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-      // Fallback to FAQ if no API key
+      // Graceful degradation — fallback to curated FAQ if key is absent
       const faqMatch = findFAQResponse(sanitizedMessage);
       const response = faqMatch || DEFAULT_FALLBACK;
       return Response.json({
