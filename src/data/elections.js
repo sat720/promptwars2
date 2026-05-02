@@ -1958,34 +1958,7 @@ export const ELECTIONS = [
     color: '#22c55e',
     icon: '🗳️',
   },
-  {
-    id: 'karnataka-mptc-2026',
-    name: 'Karnataka Mandal Parishad (MPTC) Election',
-    type: ELECTION_TYPES.LOCAL_BODY,
-    status: ELECTION_STATUS.UPCOMING,
-    votingDay: upcomingDate.toISOString(),
-    state: 'Karnataka',
-    description: 'Local body elections to elect Members of Mandal Parishad Territorial Constituency (MPTC) across rural Karnataka.',
-    whatElected: 'MPTC Member',
-    whoCanVote: 'Rural residents of Karnataka aged 18+ in respective mandals',
-    timeline: upcomingTimeline,
-    color: '#10b981',
-    icon: '🌾',
-  },
-  {
-    id: 'telangana-zptc-2026',
-    name: 'Telangana Zilla Parishad (ZPTC) Election',
-    type: ELECTION_TYPES.LOCAL_BODY,
-    status: ELECTION_STATUS.UPCOMING,
-    votingDay: upcomingDate.toISOString(),
-    state: 'Telangana',
-    description: 'District level local body elections to elect Zilla Parishad Territorial Constituency (ZPTC) members.',
-    whatElected: 'ZPTC Member',
-    whoCanVote: 'Rural residents of Telangana aged 18+ in respective territorial constituencies',
-    timeline: upcomingTimeline,
-    color: '#059669',
-    icon: '🏛️',
-  },
+
 
 ];
 
