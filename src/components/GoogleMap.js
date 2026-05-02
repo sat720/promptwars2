@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 
 /**
- * Google Maps component for polling booth display
+ * Google Maps component for polling booth display.
+ * Fetches the API key from a server-side route to support Cloud Run runtime secrets.
  * @param {{ lat: number, lng: number, boothName: string }} props
  */
 export default function GoogleMap({ lat, lng, boothName }) {
@@ -12,104 +13,117 @@ export default function GoogleMap({ lat, lng, boothName }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    if (!apiKey) { setError(true); return; }
+    let cancelled = false;
 
-    const initMap = () => {
-      if (!mapRef.current || !window.google) return;
+    async function loadMap() {
       try {
-        const map = new window.google.maps.Map(mapRef.current, {
-          center: { lat, lng },
-          zoom: 15,
-          mapTypeId: 'roadmap',
-          styles: [
-            { elementType: 'geometry', stylers: [{ color: '#1a1a2e' }] },
-            { elementType: 'labels.text.fill', stylers: [{ color: '#94a3b8' }] },
-            { elementType: 'labels.text.stroke', stylers: [{ color: '#1a1a2e' }] },
-            { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#16213e' }] },
-            { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0a0a0f' }] },
-          ],
-          disableDefaultUI: false,
-          zoomControl: true,
-          mapTypeControl: false,
-          streetViewControl: true,
-          fullscreenControl: true,
-        });
+        // Fetch the key from the server at runtime — works in both local and Cloud Run
+        const res = await fetch('/api/maps-key');
+        const { key: apiKey } = await res.json();
 
-        // Booth marker
-        new window.google.maps.Marker({
-          position: { lat, lng },
-          map,
-          title: boothName,
-          icon: {
-            path: window.google.maps.SymbolPath.CIRCLE,
-            scale: 12,
-            fillColor: '#6366f1',
-            fillOpacity: 1,
-            strokeColor: '#ffffff',
-            strokeWeight: 3,
-          },
-        });
+        if (!apiKey || cancelled) { setError(true); return; }
 
-        // Info window
-        const infoWindow = new window.google.maps.InfoWindow({
-          content: `<div style="padding:8px;font-family:Inter,sans-serif;color:#1a1a2e"><strong>🗳️ ${boothName}</strong><br/><span style="font-size:0.8rem">Polling Booth</span></div>`,
-        });
+        const initMap = () => {
+          if (!mapRef.current || !window.google || cancelled) return;
+          try {
+            const map = new window.google.maps.Map(mapRef.current, {
+              center: { lat, lng },
+              zoom: 15,
+              mapTypeId: 'roadmap',
+              styles: [
+                { elementType: 'geometry', stylers: [{ color: '#1a1a2e' }] },
+                { elementType: 'labels.text.fill', stylers: [{ color: '#94a3b8' }] },
+                { elementType: 'labels.text.stroke', stylers: [{ color: '#1a1a2e' }] },
+                { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#16213e' }] },
+                { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0a0a0f' }] },
+              ],
+              disableDefaultUI: false,
+              zoomControl: true,
+              mapTypeControl: false,
+              streetViewControl: true,
+              fullscreenControl: true,
+            });
 
-        // Try to get user location
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-              new window.google.maps.Marker({
-                position: userPos,
-                map,
-                title: 'Your Location',
-                icon: {
-                  path: window.google.maps.SymbolPath.CIRCLE,
-                  scale: 8,
-                  fillColor: '#22c55e',
-                  fillOpacity: 1,
-                  strokeColor: '#fff',
-                  strokeWeight: 2,
+            // Booth marker
+            new window.google.maps.Marker({
+              position: { lat, lng },
+              map,
+              title: boothName,
+              icon: {
+                path: window.google.maps.SymbolPath.CIRCLE,
+                scale: 12,
+                fillColor: '#6366f1',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 3,
+              },
+            });
+
+            // Info window
+            const infoWindow = new window.google.maps.InfoWindow({
+              content: `<div style="padding:8px;font-family:Inter,sans-serif;color:#1a1a2e"><strong>🗳️ ${boothName}</strong><br/><span style="font-size:0.8rem">Polling Booth</span></div>`,
+            });
+
+            // Try to get user location
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                  const userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                  new window.google.maps.Marker({
+                    position: userPos,
+                    map,
+                    title: 'Your Location',
+                    icon: {
+                      path: window.google.maps.SymbolPath.CIRCLE,
+                      scale: 8,
+                      fillColor: '#22c55e',
+                      fillOpacity: 1,
+                      strokeColor: '#fff',
+                      strokeWeight: 2,
+                    },
+                  });
+                  const directionsService = new window.google.maps.DirectionsService();
+                  const directionsRenderer = new window.google.maps.DirectionsRenderer({
+                    suppressMarkers: true,
+                    polylineOptions: { strokeColor: '#6366f1', strokeWeight: 4, strokeOpacity: 0.8 },
+                  });
+                  directionsRenderer.setMap(map);
+                  directionsService.route({
+                    origin: userPos,
+                    destination: { lat, lng },
+                    travelMode: window.google.maps.TravelMode.WALKING,
+                  }, (result, status) => {
+                    if (status === 'OK') directionsRenderer.setDirections(result);
+                  });
                 },
-              });
-              // Draw route
-              const directionsService = new window.google.maps.DirectionsService();
-              const directionsRenderer = new window.google.maps.DirectionsRenderer({
-                suppressMarkers: true,
-                polylineOptions: { strokeColor: '#6366f1', strokeWeight: 4, strokeOpacity: 0.8 },
-              });
-              directionsRenderer.setMap(map);
-              directionsService.route({
-                origin: userPos,
-                destination: { lat, lng },
-                travelMode: window.google.maps.TravelMode.WALKING,
-              }, (result, status) => {
-                if (status === 'OK') directionsRenderer.setDirections(result);
-              });
-            },
-            () => {} // Silently ignore location denial
-          );
+                () => {} // Silently ignore location denial
+              );
+            }
+
+            setLoaded(true);
+          } catch (err) {
+            setError(true);
+          }
+        };
+
+        if (window.google) {
+          initMap();
+        } else {
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+          script.async = true;
+          script.defer = true;
+          script.onload = initMap;
+          script.onerror = () => setError(true);
+          document.head.appendChild(script);
         }
-
-        setLoaded(true);
-      } catch (err) {
-        setError(true);
+      } catch {
+        if (!cancelled) setError(true);
       }
-    };
-
-    if (window.google) {
-      initMap();
-    } else {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-      script.async = true;
-      script.defer = true;
-      script.onload = initMap;
-      script.onerror = () => setError(true);
-      document.head.appendChild(script);
     }
+
+    loadMap();
+    return () => { cancelled = true; };
   }, [lat, lng, boothName]);
 
   if (error) {
