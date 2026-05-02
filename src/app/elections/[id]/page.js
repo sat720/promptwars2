@@ -110,13 +110,12 @@ export default function ElectionDetailPage() {
   const router = useRouter();
   const { language } = useLanguage();
   const [tab, setTab] = useState('overview');
-  const [voterData, setVoterData] = useState(null);
-
-  useEffect(() => {
-    if (isLoggedIn()) {
-      setVoterData(getVoterData());
+  const [voterData, setVoterData] = useState(() => {
+    if (typeof window !== 'undefined' && isLoggedIn()) {
+      return getVoterData();
     }
-  }, []);
+    return null;
+  });
 
   const election = ELECTIONS.find(e => e.id === params.id);
 

@@ -213,20 +213,18 @@ function RepresentativeDetail({ rep, onBack }) {
 }
 
 export default function PoliticalPositionsPage() {
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const roleParam = new URLSearchParams(window.location.search).get('role');
+      if (roleParam) {
+        return REPRESENTATIVES.find(r => r.id === roleParam) || null;
+      }
+    }
+    return null;
+  });
   const [activeCategory, setActiveCategory] = useState('all');
   const { language } = useLanguage();
   const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const roleParam = searchParams.get('role');
-    if (roleParam) {
-      const rep = REPRESENTATIVES.find(r => r.id === roleParam);
-      if (rep) {
-        setSelected(rep);
-      }
-    }
-  }, [searchParams]);
 
   const categories = ['all', 'High Office', 'Elected Representative', 'Local Body'];
 

@@ -20,7 +20,12 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(false);
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(STORAGE_KEYS.THEME) || 'dark';
+    }
+    return 'dark';
+  });
   const { language, changeLanguage } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [voterName, setVoterName] = useState('');
@@ -34,10 +39,6 @@ export default function Navbar() {
 
     checkAuth();
     const interval = setInterval(checkAuth, 2000);
-
-    const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || 'dark';
-    setTheme(savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
 
     return () => clearInterval(interval);
   }, []);

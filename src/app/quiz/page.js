@@ -24,12 +24,13 @@ export default function QuizPage() {
   const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
-  const [bestScore, setBestScore] = useState(0);
-
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.QUIZ_SCORE);
-    if (saved) setBestScore(parseInt(saved));
-  }, []);
+  const [bestScore, setBestScore] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(STORAGE_KEYS.QUIZ_SCORE);
+      return saved ? parseInt(saved) : 0;
+    }
+    return 0;
+  });
 
   const handleSelect = (idx) => {
     if (answered) return;

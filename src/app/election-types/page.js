@@ -61,17 +61,15 @@ export default function ElectionTypesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { language } = useLanguage();
-  const [selectedType, setSelectedType] = useState(null);
-
-  useEffect(() => {
-    const typeParam = searchParams.get('type');
-    if (typeParam) {
-      const etype = ELECTION_TYPES_DATA.find(t => t.id === typeParam);
-      if (etype) {
-        setSelectedType(etype);
+  const [selectedType, setSelectedType] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const typeParam = new URLSearchParams(window.location.search).get('type');
+      if (typeParam) {
+        return ELECTION_TYPES_DATA.find(t => t.id === typeParam) || null;
       }
     }
-  }, [searchParams]);
+    return null;
+  });
 
   if (selectedType) {
     return (

@@ -19,17 +19,21 @@ export function useTranslate(text, targetLanguage) {
   useEffect(() => {
     // Reset to original if language is English or no text
     if (!text || !targetLanguage || targetLanguage === 'en') {
-      setTranslated(text);
-      setLoading(false);
-      return;
+      const timer = setTimeout(() => {
+        setTranslated(text);
+        setLoading(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
     // Return cached value if exists
     const cacheKey = `${text}_${targetLanguage}`;
     if (translationCache[cacheKey]) {
-      setTranslated(translationCache[cacheKey]);
-      setLoading(false);
-      return;
+      const timer = setTimeout(() => {
+        setTranslated(translationCache[cacheKey]);
+        setLoading(false);
+      }, 0);
+      return () => clearTimeout(timer);
     }
 
     // Prevent duplicate calls for the same state update
@@ -54,7 +58,6 @@ export function useTranslate(text, targetLanguage) {
           translationCache[cacheKey] = data.translatedText;
           setTranslated(data.translatedText);
         } else {
-          // Fallback to original
           setTranslated(text);
         }
       } catch (error) {

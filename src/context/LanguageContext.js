@@ -6,12 +6,12 @@ import { STORAGE_KEYS } from '@/constants';
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState('en');
-
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.LANGUAGE) || 'en';
-    setLanguage(saved);
-  }, []);
+  const [language, setLanguage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(STORAGE_KEYS.LANGUAGE) || 'en';
+    }
+    return 'en';
+  });
 
   const changeLanguage = (code) => {
     setLanguage(code);

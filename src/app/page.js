@@ -125,11 +125,12 @@ const LEARN_PREVIEWS = [
 export default function HomePage() {
   const router = useRouter();
   const { language } = useLanguage();
-  const [hasVoterId, setHasVoterId] = useState(false);
-
-  useEffect(() => {
-    setHasVoterId(hasValidVoterData());
-  }, []);
+  const [hasVoterId, setHasVoterId] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return hasValidVoterData();
+    }
+    return false;
+  });
 
   return (
     <div className="page-wrapper">

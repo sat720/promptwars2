@@ -34,21 +34,18 @@ const SUGGESTED_QUESTIONS = [
 export default function VoteAssist() {
   const [open, setOpen] = useState(false);
   const { language } = useLanguage();
-  const [messages, setMessages] = useState([]);
-
-  useEffect(() => {
-    const welcomeMsg = {
-      id: 'welcome',
-      role: 'ai',
-      content: language === 'hi' ? "👋 नमस्ते! मैं **वोट असिस्ट** हूं, भारतीय चुनावों के लिए आपका एआई गाइड!\n\nमैं आपकी मदद कर सकता हूं:\n• चुनाव प्रक्रिया को समझना\n• अपनी वोटर आईडी प्राप्त करना\n• अपना मतदान केंद्र ढूँढना\n• चुनाव की समय सीमा और चरण\n\nआप क्या जानना चाहेंगे?" :
-               language === 'te' ? "👋 నమస్తే! నేను **ఓటు అసిస్ట్**, భారతీయ ఎన్నికల కోసం మీ AI గైడ్!\n\nనేను మీకు సహాయం చేయగలను:\n• ఎన్నికల ప్రక్రియను అర్థం చేసుకోవడం\n• మీ ఓటరు ఐడిని పొందడం\n• మీ పోలింగ్ బూత్‌ను కనుగొనడం\n• ఎన్నికల కాలక్రమం మరియు దశలు\n\nమీరు ఏమి తెలుసుకోవాలనుకుంటున్నారు?" :
-               language === 'ta' ? "👋 வணக்கம்! நான் **வாக்கு உதவி**, இந்திய தேர்தல்களுக்கான உங்கள் AI வழிகாட்டி!\n\nநான் உங்களுக்கு உதவ முடியும்:\n• தேர்தல் செயல்முறையைப் புரிந்துகொள்வது\n• உங்கள் வாக்காளர் அடையாள அட்டையைப் பெறுதல்\n• உங்கள் வாக்குச் சாவடியைக் கண்டறிதல்\n• தேர்தல் காலவரிசை மற்றும் நிலைகள்\n\nநீங்கள் என்ன தெரிந்து கொள்ள விரும்புகிறீர்கள்?" :
-               language === 'kn' ? "👋 ನಮಸ್ತೆ! ನಾನು **ಮತ ಸಹಾಯ**, ಭಾರತೀಯ ಚುನಾವಣೆಗಳಿಗೆ ನಿಮ್ಮ AI ಮಾರ್ಗದರ್ಶಿ!\n\nನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಲ್ಲೆ:\n• ಚುನಾವಣಾ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳುವುದು\n• ನಿಮ್ಮ ಮತದಾರರ ಗುರುತಿನ ಚೀಟಿಯನ್ನು ಪಡೆಯುವುದು\n• ನಿಮ್ಮ ಮತದಾನ ಕೇಂದ್ರವನ್ನು ಹುಡುಕುವುದು\n• ಚುನಾವಣಾ ವೇಳಾಪಟ್ಟಿ ಮತ್ತು ಹಂತಗಳು\n\nನೀವು ಏನನ್ನು ತಿಳಿಯಲು ಬಯಸುತ್ತೀರಿ?" :
-               "👋 Hi! I'm **Vote Assist**, your AI guide to Indian elections!\n\nI can help you with:\n• Understanding the election process\n• Getting your Voter ID\n• Finding your polling booth\n• Election timelines and stages\n\nWhat would you like to know?",
-      timestamp: new Date(),
-    };
-    setMessages(prev => prev.length === 0 ? [welcomeMsg] : prev);
-  }, [language]);
+  const [messages, setMessages] = useState(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem(STORAGE_KEYS.CHAT_HISTORY);
+        if (saved) {
+          const history = JSON.parse(saved);
+          if (history.length > 0) return history;
+        }
+      }
+    } catch {}
+    return [];
+  });
 
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -67,17 +64,6 @@ export default function VoteAssist() {
     const handleOpen = () => setOpen(true);
     window.addEventListener('openVoteAssist', handleOpen);
     return () => window.removeEventListener('openVoteAssist', handleOpen);
-  }, []);
-
-  // Load chat history from localStorage
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.CHAT_HISTORY);
-      if (saved) {
-        const history = JSON.parse(saved);
-        if (history.length > 0) setMessages(history);
-      }
-    } catch {}
   }, []);
 
   // Save chat history

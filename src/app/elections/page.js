@@ -19,32 +19,23 @@ import toast from 'react-hot-toast';
 export default function ElectionsPage() {
   const { language } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [stateFilter, setStateFilter] = useState('all');
-  const [showMyElections, setShowMyElections] = useState(false);
   const [isListening, setIsListening] = useState(false);
-
-  const loggedIn = isLoggedIn();
-  const voterData = getVoterData();
-
-  useEffect(() => {
-    // If URL has ?filter=my, turn on the toggle automatically on initial load
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('filter') === 'my') {
-      const isUserLoggedIn = isLoggedIn();
-      if (isUserLoggedIn) {
-        const data = getVoterData();
-        setShowMyElections(true);
-        if (data && data.state) {
-          setStateFilter(data.state);
-        }
-        setTypeFilter('all');
-      } else {
-        setShowMyElections(true); // Will be reset or show toast when clicked
-      }
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [showMyElections, setShowMyElections] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return new URLSearchParams(window.location.search).get('filter') === 'my';
     }
-  }, []);
+    return false;
+  });
+  
+  const [stateFilter, setStateFilter] = useState(() => {
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('filter') === 'my') {
+      const data = getVoterData();
+      return (data && data.state) || 'all';
+    }
+    return 'all';
+  });
 
   // Voice Search Implementation (Google STT / Web Speech)
   const startVoiceSearch = () => {

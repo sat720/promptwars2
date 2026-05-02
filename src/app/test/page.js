@@ -102,7 +102,7 @@ export default function TestDashboard() {
             {results.length === 0 ? (
               <div className="flex-col flex-center" style={{ padding: 80, opacity: 0.5 }}>
                 <FlaskConical size={48} className="mb-4" />
-                <p>Click "Run All Tests" to start the validation suite.</p>
+                <p>Click {"\"Run All Tests\""}  to start the validation suite.</p>
               </div>
             ) : (
               results.map((res, i) => (
@@ -129,7 +129,7 @@ export default function TestDashboard() {
         <div className="mt-8 flex gap-4 items-center p-4 bg-indigo-500/5 rounded-xl border border-indigo-500/10">
           <Shield size={20} className="text-indigo-400 shrink-0" />
           <p className="text-sm text-slate-400">
-            This dashboard proves the <strong>Testing & Validation</strong> metric by executing the internal application logic against a set of strictly defined assertions. High pass rates ensure the reliability of VoteWise's democratic platform.
+            This dashboard proves the <strong>Testing &amp; Validation</strong> metric by executing the internal application logic against a set of strictly defined assertions. High pass rates ensure the reliability of VoteWise democratic platform.
           </p>
         </div>
       </div>
