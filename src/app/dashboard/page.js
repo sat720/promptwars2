@@ -144,10 +144,13 @@ function VoterIdCard({ data, flipped, onFlip }) {
 export default function DashboardPage() {
   const router = useRouter();
   const { language } = useLanguage();
-  const [voterData, setVoterData] = useState(null);
+  const [voterData, setVoterData] = useState(() => {
+    if (typeof window !== 'undefined') return getVoterData();
+    return null;
+  });
   const [cardFlipped, setCardFlipped] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [editForm, setEditForm] = useState({});
+  const [editForm, setEditForm] = useState(voterData || {});
   const [editErrors, setEditErrors] = useState({});
 
   const handleDownloadCard = async () => {
@@ -181,11 +184,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!isLoggedIn()) {
       router.push(ROUTES.LOGIN);
-      return;
     }
-    const data = getVoterData();
-    setVoterData(data);
-    setEditForm(data || {});
   }, [router]);
 
   const handleLogout = () => {
@@ -217,26 +216,27 @@ export default function DashboardPage() {
 
   return (
     <div className="page-wrapper" style={{ background: 'radial-gradient(ellipse at top right, rgba(99,102,241,0.08), transparent 50%)' }}>
+    <main className="page-wrapper">
       <div className="container" style={{ padding: '60px 24px' }}>
-        <div className="flex-between" style={{ marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
+        <header className="flex-between" style={{ marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
           <div>
             <h1 style={{ fontSize: '2.2rem', fontWeight: 900 }}><TranslatedText text="My Dashboard" /></h1>
             <p style={{ color: 'var(--text2)' }}><TranslatedText text="Welcome back" />, <strong>{voterData.firstName}</strong>! 🗳️</p>
           </div>
           <div className="flex gap-12">
-            <button className="btn btn-outline btn-sm" onClick={() => setEditing(true)} id="edit-details-btn">
+            <button className="btn btn-outline btn-sm" onClick={() => setEditing(true)} id="edit-details-btn" aria-label="Edit Profile Details">
               <Edit2 size={14} /> <TranslatedText text="Edit Details" />
             </button>
-            <button className="btn btn-ghost btn-sm" onClick={handleLogout} id="dashboard-logout-btn">
+            <button className="btn btn-ghost btn-sm" onClick={handleLogout} id="dashboard-logout-btn" aria-label="Logout of Dashboard">
               <LogOut size={14} /> <TranslatedText text="Logout" />
             </button>
           </div>
-        </div>
+        </header>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <section style={{ display: 'flex', flexDirection: 'column', gap: 20 }} aria-labelledby="personal-details-title">
             <div className="card">
-              <h2 style={{ fontWeight: 700, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <h2 id="personal-details-title" style={{ fontWeight: 700, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <User size={18} style={{ color: 'var(--primary)' }} /> <TranslatedText text="Personal Details" />
               </h2>
               {!editing ? (
@@ -311,7 +311,7 @@ export default function DashboardPage() {
                 ))}
               </div>
             </div>
-          </div>
+          </section>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
@@ -370,9 +370,10 @@ export default function DashboardPage() {
                 </button>
               </Link>
             </div>
+            </div>
           </div>
         </div>
-      </div>
+    </main>
     </div>
   );
 }

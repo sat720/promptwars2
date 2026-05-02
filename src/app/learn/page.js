@@ -157,10 +157,9 @@ export default function LearnPage() {
   const section = LEARN_SECTIONS.find(s => s.id === activeSection);
 
   return (
-    <div className="page-wrapper" style={{ background: 'radial-gradient(ellipse at top right, rgba(99,102,241,0.08), transparent 50%)' }}>
+    <main className="page-wrapper" style={{ background: 'radial-gradient(ellipse at top right, rgba(99,102,241,0.08), transparent 50%)' }}>
       <div className="container" style={{ padding: '60px 24px' }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+        <header style={{ textAlign: 'center', marginBottom: 48 }}>
           <div className="badge badge-info" style={{ marginBottom: 16 }}>📚 <TranslatedText text="Interactive Education" /></div>
           <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 800, marginBottom: 12 }}>
             <TranslatedText text="Learn About" /> <span className="gradient-text"><TranslatedText text="Indian Elections" /></span>
@@ -168,12 +167,13 @@ export default function LearnPage() {
           <p style={{ color: 'var(--text2)', maxWidth: 550, margin: '0 auto' }}>
             <TranslatedText text="Everything you need to know — from how elections work to your rights as a voter. Interactive, easy-to-follow, and in plain language." />
           </p>
-        </div>
+        </header>
 
-        {/* Section navigation */}
-        <div style={{ display: 'flex', gap: 10, marginBottom: 40, overflowX: 'auto', paddingBottom: 8, flexWrap: 'wrap' }}>
+        <nav style={{ display: 'flex', gap: 10, marginBottom: 40, overflowX: 'auto', paddingBottom: 8, flexWrap: 'wrap' }} aria-label="Learning Topics">
           {LEARN_SECTIONS.map(s => (
             <button key={s.id} onClick={() => setActiveSection(s.id)}
+              aria-pressed={activeSection === s.id}
+              aria-label={`Learn about ${s.title}`}
               style={{
                 padding: '10px 18px', borderRadius: 100, border: `2px solid ${activeSection === s.id ? s.color : 'var(--border2)'}`,
                 background: activeSection === s.id ? `${s.color}20` : 'var(--bg3)',
@@ -202,15 +202,16 @@ export default function LearnPage() {
               <Layers size={14} /> <TranslatedText text="Types of Elections in India" />
             </button>
           </Link>
-        </div>
+        </nav>
 
         {/* Section content */}
         {section.id === 'process' && (
           <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 32 }}>
-            {/* Step list */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: 6 }} aria-label="Election Process Steps">
               {section.steps.map((step, i) => (
                 <button key={i} onClick={() => setActiveStep(i)}
+                  aria-pressed={activeStep === i}
+                  aria-label={`Step ${i + 1}: ${step.title}`}
                   style={{
                     padding: '12px 16px', borderRadius: 10, border: 'none', textAlign: 'left', cursor: 'pointer',
                     background: activeStep === i ? 'rgba(99,102,241,0.15)' : 'transparent',
@@ -228,7 +229,7 @@ export default function LearnPage() {
                   </div>
                 </button>
               ))}
-            </div>
+            </nav>
             {/* Step detail */}
             <div className="card animate-fade" key={activeStep}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -366,6 +367,6 @@ export default function LearnPage() {
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

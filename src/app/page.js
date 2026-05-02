@@ -156,17 +156,17 @@ export default function HomePage() {
               </p>
               <div className="flex gap-16" style={{ flexWrap: 'wrap' }}>
                 <Link href={ROUTES.LEARN}>
-                  <button className="btn btn-primary btn-lg" id="hero-learn-btn">
+                  <button className="btn btn-primary btn-lg" id="hero-learn-btn" aria-label="Start learning about elections">
                     <BookOpen size={20} /> {t('start_learning', language)} <ArrowRight size={18} />
                   </button>
                 </Link>
-                {hasVoterId ? (
+                 {hasVoterId ? (
                   <Link href={ROUTES.LOGIN}>
-                    <button className="btn btn-outline btn-lg" id="hero-login-btn">{t('view_my_card', language)}</button>
+                    <button className="btn btn-outline btn-lg" id="hero-login-btn" aria-label="View my voter card">{t('view_my_card', language)}</button>
                   </Link>
                 ) : (
                   <Link href={ROUTES.APPLY}>
-                    <button className="btn btn-accent btn-lg" id="hero-apply-btn">
+                    <button className="btn btn-accent btn-lg" id="hero-apply-btn" aria-label="Apply for digital voter ID">
                       🪪 {t('get_voter_id', language)} <ArrowRight size={18} />
                     </button>
                   </Link>
